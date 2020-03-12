@@ -1,0 +1,24 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+    max-http-post-size: -1
+  port: 8090
+  connection-timeout: 5000s
+  servlet:
+    context-path: /
+
+
+#es相关配置
+elasticSearch:
+  hosts: 10.251.76.43:9200,10.251.76.30:9200,10.251.76.45:9200
+  maxConnectNum: 100
+  maxConnectPerRoute: 100
+  connectTimeoutMillis: 90000
+  socketTimeoutMillis: 60000
+#es 健康检查
+management:
+  health:
+    elasticsearch:
+      enabled: false
