@@ -1,15 +1,22 @@
 package com.zjm.elasticsearch.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 import com.zjm.config.elasticSearch.utils.ElasticPerformRequestUtils;
+import com.zjm.config.elasticSearch.utils.ElasticSearchOperationUtils;
+import com.zjm.config.elasticSearch.utils.ElasticSearchQueryUtils;
+import com.zjm.config.elasticSearch.utils.ElasticSearchRequestUtils;
+import com.zjm.model.controller.request.ReqCreateIndexAlias;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author White Tan
@@ -24,10 +31,79 @@ public class ESController {
 	@Resource
 	private ElasticPerformRequestUtils elasticPerformRequestUtils;
 
+	@Resource
+	private ElasticSearchOperationUtils elasticSearchOperationUtils;
+
+	@Resource
+	private ElasticSearchQueryUtils elasticSearchQueryUtils;
+
+	@Resource
+	private ElasticSearchRequestUtils elasticSearchRequestUtils;
+
 	@ApiOperation("判断索引是否存在")
-	@GetMapping("/indexExist")
-	public Boolean indexExist(
-			@ApiParam(name = "索引名称")  String indexName){
+	@GetMapping("/indexExist/{indexName}")
+	public Boolean indexExist(@ApiParam(name = "indexName", value = "索引名称")
+			@PathVariable("indexName") String indexName){
 		return elasticPerformRequestUtils.indexExist(indexName);
+	}
+
+	@ApiOperation("创建索引")
+	@GetMapping("/createIndex/{indexName}")
+	public Boolean createIndex(@ApiParam(name = "indexName", value = "索引名称")
+								   @PathVariable("indexName") String indexName){
+		return elasticSearchOperationUtils.createIndex(indexName);
+	}
+
+	@ApiOperation("删除索引")
+	@GetMapping("/deleteIndex/{indexName}")
+	public Boolean deleteIndex(@ApiParam(name = "indexName", value = "索引名称")
+							   @PathVariable("indexName") String indexName){
+		return elasticSearchOperationUtils.deleteIndex(indexName);
+	}
+
+	@ApiOperation("创建索引数据（向索引插入数据）")
+	@PostMapping("/createIndexData")
+	public String createIndexData(){
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("title","es JAVA 操作"+Thread.currentThread().getId());
+		map.put("author","white tan"+Thread.currentThread().getId());
+		map.put("created_time", new Date());
+		map.put("updated_time", new Date());
+		map.put("number_of_words", 2000);
+		map.put("price", new BigDecimal(2.1501).doubleValue());
+		map.put("thread_id", Thread.currentThread().getId());
+		map.put("thread_name", Thread.currentThread().getName());
+		map.put("thread_state", Thread.currentThread().getState());
+		map.put("thread_priority", Thread.currentThread().getPriority());
+		return elasticSearchOperationUtils.insertOne("blogs", "_doc", map); // 返回ID
+//		elasticSearchOperationUtils.insertOneSync("blogs", "_doc", map, 10l); // 返回ID
+//		elasticSearchOperationUtils.insertOneASync("blogs", "_doc", map); // 异步执行
+//		return "";
+	}
+
+	@ApiOperation("更新索引数据（向索引中数据更新）")
+	@PostMapping("/modifyIndexData/{id}")
+	public Boolean modifyIndexData(@ApiParam(name = "id", value = "索引数据ID")
+									   @PathVariable("id") String id){
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("title","es JAVA 操作 - 改"+Thread.currentThread().getId());
+		map.put("author","white tan"+Thread.currentThread().getId());
+		map.put("created_time", new Date());
+		map.put("updated_time", new Date());
+		map.put("number_of_words", 2020);
+		map.put("price", new BigDecimal(2.1601).doubleValue());
+		map.put("thread_id", Thread.currentThread().getId());
+		map.put("thread_name", Thread.currentThread().getName());
+		map.put("thread_state", Thread.currentThread().getState());
+		map.put("thread_priority", Thread.currentThread().getPriority());
+		elasticSearchOperationUtils.upsertOneSyncById("blogs", "_doc", map, id);
+		return false;
+	}
+
+	@ApiOperation("创建索引别名")
+	@PostMapping("/createIndexAlias")
+	public Boolean createIndexAlias(@RequestBody ReqCreateIndexAlias reqCreateIndexAlias){
+
+		return false;
 	}
 }

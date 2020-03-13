@@ -12,7 +12,8 @@ server:
 
 #es相关配置
 elasticSearch:
-  hosts: 10.251.76.43:9200,10.251.76.30:9200,10.251.76.45:9200
+  #hosts: 10.251.76.43:9200,10.251.76.30:9200,10.251.76.45:9200
+  hosts: 127.0.0.1:9200
   maxConnectNum: 100
   maxConnectPerRoute: 100
   connectTimeoutMillis: 90000
