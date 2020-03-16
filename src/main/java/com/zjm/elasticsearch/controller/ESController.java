@@ -65,7 +65,7 @@ public class ESController {
 	@PostMapping("/createIndexData")
 	public String createIndexData(){
 		Map<String, Object> map = Maps.newHashMap();
-		map.put("title","es JAVA 操作"+Thread.currentThread().getId());
+		map.put("title","python 操作"+Thread.currentThread().getId());
 		map.put("author","white tan"+Thread.currentThread().getId());
 		map.put("created_time", new Date());
 		map.put("updated_time", new Date());
@@ -82,7 +82,7 @@ public class ESController {
 	}
 
 	@ApiOperation("更新索引数据（向索引中数据更新）")
-	@PostMapping("/modifyIndexData/{id}")
+	@GetMapping("/modifyIndexData/{id}")
 	public Boolean modifyIndexData(@ApiParam(name = "id", value = "索引数据ID")
 									   @PathVariable("id") String id){
 		Map<String, Object> map = Maps.newHashMap();
@@ -103,6 +103,14 @@ public class ESController {
 	@ApiOperation("创建索引别名")
 	@PostMapping("/createIndexAlias")
 	public Boolean createIndexAlias(@RequestBody ReqCreateIndexAlias reqCreateIndexAlias){
+
+		return false;
+	}
+
+	@ApiOperation("创建索引别名")
+	@GetMapping("/getDataByID/{id}")
+	public Boolean getDataByID(@ApiParam(name = "id", value = "索引数据ID")
+								   @PathVariable("id") String id){
 
 		return false;
 	}

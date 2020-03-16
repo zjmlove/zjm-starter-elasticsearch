@@ -30,7 +30,7 @@ import java.util.concurrent.*;
 
 /**
  * @author White Tan
- * @description ES 查询操作帮助类
+ * @description ES 查询操作帮助类 ： 创建索引、操作索引：增、删、改
  * @date 2020/3/12
  */
 @Component

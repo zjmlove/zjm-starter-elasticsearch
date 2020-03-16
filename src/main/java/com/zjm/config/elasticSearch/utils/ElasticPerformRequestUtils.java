@@ -20,7 +20,7 @@ import java.io.IOException;
 
 /**
  * @author White Tan
- * @description ES 执行请求帮助类
+ * @description ES 执行请求帮助类；索引存在、设置索引分片和备份
  * @date 2020/3/12
  */
 @Component
