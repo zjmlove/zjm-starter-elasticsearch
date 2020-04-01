@@ -49,6 +49,7 @@ public class ElasticSearchOperationUtils {
 			throw new RRException("索引已存在");
 		} else {
 			CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
+			log.info("ElasticSearchOperationUtils - createIndex createIndexRequest ：[{}]", JSON.toJSONString(createIndexRequest));
 			return this.createIndex(createIndexRequest);
 		}
 	}
@@ -56,14 +57,14 @@ public class ElasticSearchOperationUtils {
 	public boolean createIndex(CreateIndexRequest createIndexRequest) {
 		try {
 			CreateIndexResponse indexResponse = this.restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+			log.info("ElasticSearchOperationUtils - createIndex indexResponse", JSON.toJSONString(indexResponse));
 			if (!indexResponse.isAcknowledged()) {
-				log.info("创建索引失败");
+				log.info("ElasticSearchOperationUtils - createIndex 创建索引失败");
 			}
-
 			return indexResponse.isAcknowledged();
-		} catch (IOException var3) {
-			log.error("创建索引时出现异常", var3);
-			var3.printStackTrace();
+		} catch (IOException e) {
+			log.error("ElasticSearchOperationUtils - createIndex 创建索引时出现异常", e);
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -75,14 +76,14 @@ public class ElasticSearchOperationUtils {
 			boolean flag;
 			try {
 				DeleteIndexRequest request = new DeleteIndexRequest(indexName);
+				log.info("ElasticSearchOperationUtils - deleteIndex request", JSON.toJSONString(request));
 				this.restHighLevelClient.indices().delete(request, RequestOptions.DEFAULT);
 				flag = true;
-			} catch (IOException var4) {
-				log.error("删除index时出现异常", var4);
-				var4.printStackTrace();
+			} catch (IOException e) {
+				log.error("ElasticSearchOperationUtils - deleteIndex 删除index时出现异常", e);
+				e.printStackTrace();
 				flag = false;
 			}
-
 			return flag;
 		}
 	}

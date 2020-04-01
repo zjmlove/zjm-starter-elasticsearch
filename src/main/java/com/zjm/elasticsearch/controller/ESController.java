@@ -1,6 +1,6 @@
 package com.zjm.elasticsearch.controller;
 
-import com.alibaba.fastjson.JSON;
+
 import com.google.common.collect.Maps;
 import com.zjm.config.elasticSearch.utils.ElasticPerformRequestUtils;
 import com.zjm.config.elasticSearch.utils.ElasticSearchOperationUtils;
@@ -11,11 +11,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.search.SearchRequest;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -107,11 +108,20 @@ public class ESController {
 		return false;
 	}
 
-	@ApiOperation("创建索引别名")
-	@GetMapping("/getDataByID/{id}")
-	public Boolean getDataByID(@ApiParam(name = "id", value = "索引数据ID")
-								   @PathVariable("id") String id){
-
-		return false;
+	@ApiOperation("查询索引list 信息")
+	@GetMapping("/searchCustomList/{alias}")
+	public List<Map<String, Object>> searchCustomList(@ApiParam(name = "alias", value = "索引列名")
+														  @PathVariable("alias") String alias){
+		try {
+			SearchRequest searchRequest = new SearchRequest(alias);
+			return elasticSearchRequestUtils.searchCustomList(searchRequest, false);
+		} catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
+		return null;
 	}
+
+
+
+
 }

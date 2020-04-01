@@ -1,5 +1,6 @@
 package com.zjm.config.elasticSearch.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zjm.config.elasticSearch.dto.ElasticPerformRequestDto;
 import org.apache.http.Header;
@@ -31,21 +32,22 @@ public class ElasticPerformRequestUtils {
 	@Autowired
 	private RestClient restClient;
 
+	private static final String REASON_PHRASE_OK = "OK";
+
 	public ElasticPerformRequestUtils() {
 	}
 
 	public boolean indexExist(String indexName) {
 		boolean exist = false;
-
 		try {
 			GetIndexRequest getIndexRequest = new GetIndexRequest();
 			getIndexRequest.indices(new String[]{indexName});
+			log.info("ElasticPerformRequestUtils - indexExist getIndexRequest : [{}]", JSON.toJSONString(getIndexRequest));
 			exist = this.restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
-		} catch (IOException var4) {
-			log.error("验证索引是否存在时出现异常", var4);
-			var4.printStackTrace();
+		} catch (IOException e) {
+			log.error("验证索引是否存在时出现异常", e);
+			e.printStackTrace();
 		}
-
 		return exist;
 	}
 	//	number_of_shards  是数据分片数，默认为5，有时候设置为3
@@ -70,7 +72,6 @@ public class ElasticPerformRequestUtils {
 
 	private boolean doRequest(ElasticPerformRequestDto performRequestDto) {
 		boolean result = false;
-
 		try {
 			result = performRequestResult(this.restClient, performRequestDto);
 		} catch (Exception var4) {
@@ -83,16 +84,25 @@ public class ElasticPerformRequestUtils {
 
 	public static boolean performRequestResult(RestClient restClient, ElasticPerformRequestDto performRequestDto) throws IOException {
 		Response response = getResponseByperformRequest(restClient, performRequestDto);
-		return response == null ? false : "OK".equals(response.getStatusLine().getReasonPhrase());
+		log.info("ElasticPerformRequestUtils - performRequestResult response：[{}]", JSON.toJSONString(response));
+		return response == null ? false :
+				ElasticPerformRequestUtils.REASON_PHRASE_OK.equals(response.getStatusLine().getReasonPhrase());
 	}
 
 	public static Response getResponseByperformRequest(RestClient restClient, ElasticPerformRequestDto performRequestDto) throws IOException {
 		Response response;
 		if (performRequestDto.getApplicationJson() == null) {
-			response = restClient.performRequest(performRequestDto.getMethod(), performRequestDto.getEndpoint(), new Header[0]);
+			response = restClient.performRequest(
+						performRequestDto.getMethod(), performRequestDto.getEndpoint(), new Header[0]
+			);
 		} else {
 			HttpEntity httpEntity = new NStringEntity(performRequestDto.getApplicationJson().toJSONString(), ContentType.APPLICATION_JSON);
-			response = restClient.performRequest(performRequestDto.getMethod(), performRequestDto.getEndpoint(), performRequestDto.getParams(), httpEntity, new Header[0]);
+			response = restClient.performRequest(
+									performRequestDto.getMethod(),
+									performRequestDto.getEndpoint(),
+									performRequestDto.getParams(),
+									httpEntity, new Header[0]
+			);
 		}
 
 		return response;

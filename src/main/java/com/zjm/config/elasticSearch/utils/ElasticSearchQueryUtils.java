@@ -1,5 +1,6 @@
 package com.zjm.config.elasticSearch.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import com.zjm.config.elasticSearch.ElasticSearchConfig;
 import com.zjm.config.elasticSearch.dto.ElasticQueryDto;
@@ -61,6 +62,7 @@ public class ElasticSearchQueryUtils {
 	public List<Map<String, Object>> searchCustomList(SearchRequest searchRequest, boolean needIndex) throws Exception {
 		List<Map<String, Object>> mapList = null;
 		SearchResponse searchResponse = this.getSearchResponse(this.restHighLevelClient, searchRequest);
+		log.info("ElasticSearchQueryUtils searchCustomList searchResponse: [{}]", JSON.toJSONString(searchResponse));
 		if (searchResponse != null) {
 			mapList = this.getResultMapList(searchResponse.getHits().getHits(), needIndex);
 		}
@@ -168,6 +170,9 @@ public class ElasticSearchQueryUtils {
 		ElasticQueryDto queryDto = searchDto.getQueryDto();
 		searchDto.setQueryDto(queryDto);
 		this.checkAndSeIndicesList(searchDto.getQueryDto().isCheckIndex(), searchDto.getQueryDto().getIndices());
+		/**
+		 * 查询条件『bool 构建器』
+		 */
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 		boolQuery.must(this.buildMustExist(field));
 		searchDto.setBoolQuery(boolQuery);
@@ -239,21 +244,20 @@ public class ElasticSearchQueryUtils {
 	private void checkAndSeIndicesList(boolean checkIndex, String[] indices) {
 		if (checkIndex) {
 			try {
-				String[] var3 = indices;
-				int var4 = indices.length;
+				String[] carbonIndices = indices;
+				int indicesLength = indices.length;
 
-				for(int var5 = 0; var5 < var4; ++var5) {
-					String indexName = var3[var5];
+				for(int i = 0; i < indicesLength; ++i) {
+					String indexName = carbonIndices[i];
 					if (!this.elasticPerformRequestUtils.indexExist(indexName)) {
 						throw new RRException("不存在查询的Index:" + indexName);
 					}
 				}
-			} catch (Exception var7) {
-				log.error("查询时出现错误", var7);
-				var7.printStackTrace();
+			} catch (Exception e) {
+				log.error("查询时出现错误", e);
+				e.printStackTrace();
 			}
 		}
-
 	}
 
 	private void setSort(ElasticSearchDto searchDto) {

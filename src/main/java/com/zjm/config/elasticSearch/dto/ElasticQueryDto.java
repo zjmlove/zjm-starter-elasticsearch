@@ -14,7 +14,9 @@ import java.util.Map;
 public class ElasticQueryDto {
 	private ElasticQueryPageDto queryPageDto;
 	private Map<String, String> sidx;
+	// 是否检查索引是否存在
 	private boolean checkIndex = false;
+	// 索引名数组（ index 复数 -> indices ）
 	private String[] indices;
 	private String[] includeFields;
 	private String[] excludeFields;
