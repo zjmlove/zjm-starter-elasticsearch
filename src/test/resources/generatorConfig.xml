@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+<!--  目标上下文  -->
+    <context id="zjm-starter" targetRuntime="MyBatis3">
+        <commentGenerator type="org.mybatis.generator.internal.DefaultCommentGenerator">
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+    <!--   数据库 JDBC 链接     -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://182.254.131.140:3306/test"
+                        userId="wangmeng"
+                        password="Ywc201405">
+        </jdbcConnection>
+    <!--  JAVA 数据类型处理器     -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+    <!--  JAVA 实体类输出『JAVA 源路径』『包路径』配置  -->
+        <javaModelGenerator targetPackage="com.zjm.model.entity"
+                            targetProject="./src/main/java">
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+    <!--  SQL mapper.xml 文件输出『源路径』『包路径』配置  -->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="./src/main/resources">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+    <!--  JAVA mapper 输出『源路径』『包路径』配置  -->
+        <javaClientGenerator targetPackage="com.zjm.mapper"
+                             targetProject="./src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+    <!--  数据库表名及生成对象信息配置，可以有多个 table 标签对象。    -->
+        <table tableName="test" domainObjectName="Test"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="false"
+               enableCountByExample="false" enableUpdateByExample="false"
+               selectByPrimaryKeyQueryId="false" selectByExampleQueryId="false">
+        </table>
+    </context>
+</generatorConfiguration>

@@ -1,6 +1,7 @@
 package com.zjm.elasticsearch.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import com.zjm.config.elasticSearch.utils.ElasticPerformRequestUtils;
 import com.zjm.config.elasticSearch.utils.ElasticSearchOperationUtils;
@@ -76,7 +77,10 @@ public class ESController {
 		map.put("thread_name", Thread.currentThread().getName());
 		map.put("thread_state", Thread.currentThread().getState());
 		map.put("thread_priority", Thread.currentThread().getPriority());
-		return elasticSearchOperationUtils.insertOne("blogs", "_doc", map); // 返回ID
+
+		String id = elasticSearchOperationUtils.insertOne("blogs", "_doc", map); // 返回ID
+		log.info("创建索引数据（向索引插入数据） ： info: [{}]，返回ID：[{}]", JSON.toJSONString(map), id);
+		return id;
 //		elasticSearchOperationUtils.insertOneSync("blogs", "_doc", map, 10l); // 返回ID
 //		elasticSearchOperationUtils.insertOneASync("blogs", "_doc", map); // 异步执行
 //		return "";

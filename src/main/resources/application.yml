@@ -1,3 +1,15 @@
+spring:
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  project:
+    name: zjm-starter-elasticsearch
+  application:
+    name: zjm-starter-elasticsearch
+  # 环境 DEV|UAT|PRO
+  profiles:
+    active: DEV
+
 server:
   tomcat:
     uri-encoding: UTF-8
@@ -23,3 +35,4 @@ management:
   health:
     elasticsearch:
       enabled: false
+

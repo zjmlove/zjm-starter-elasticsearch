@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <contextName>logback-spring_1</contextName>
+    <timestamp key="TIMESTAMP" datePattern="yyyy-MM-dd" />
+    <property name="LOGPATH" value="log" />
+    <springProperty scope="context" name="projectName" source="spring.project.name"/>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <springProperty scope="context" name="appDev" source="spring.profiles.active"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                %d{HH:mm:ss.SSS} [%thread] %-5level %logger{40} - %msg%n
+            </pattern>
+        </layout>
+    </appender>
+
+    <!-- 输出到文件 -->
+    <appender name="fileLog"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGPATH}${file.separator}${TIMESTAMP}.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>
+                %d{HH:mm:ss.SSS} [%thread] %-5level %logger{40} - %msg%n
+            </pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGPATH}${file.separator}all${file.separator}%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+<!--  logstash 直接接入服务  -->
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <param name="Encoding" value="UTF-8"/>
+        <!--    logstash ip和暴露的端口，我目前理解就是通过这个地址把日志发送过去    -->
+        <!-- <remoteHost>192.168.1.102</remoteHost> -->
+<!--        <remoteHost>localhost</remoteHost>-->
+<!--        <port>4567</port>-->
+        <!-- 引入过滤类 -->
+        <!-- <filter class="com.program.interceptor.ELKFilter"/>-->
+        <!-- encoder is required -->
+<!--        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder" >-->
+<!--            &lt;!&ndash;    索引名    &ndash;&gt;-->
+<!--            <customFields>{"appname":"${appName}"}</customFields>-->
+<!--        </encoder>-->
+
+        <!--    logstash ip和暴露的端口，我目前理解就是通过这个地址把日志发送过去    -->
+        <destination>127.0.0.1:10514</destination>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="fileLog" />
+        <appender-ref ref="STDOUT"  />
+        <appender-ref ref="logstash"  />
+    </root>
+
+
+<!-- 通过 beats 日志搜集，由 beats 写入logstash -->
+
+
+<!-- 通过 logback 将日志记录推送给中间件处理（ mq 或 redis），中间件写入logstash -->
+
+<!--    <property name="LOG_HOME" value="/log"/>-->
+<!--    <conversionRule conversionWord="ipandhostname" converterClass="com.yonghui.logback.IpConvert"/>-->
+
+<!--    <springProperty scope="context" name="projectName" source="spring.project.name"/>-->
+<!--    <springProperty scope="context" name="appName" source="spring.application.name"/>-->
+<!--    <springProperty scope="context" name="appDev" source="spring.profiles.active"/>-->
+<!--    <springProperty scope="context" name="kafkaTopic" source="logback.kafka.topic"/>-->
+<!--    <springProperty scope="context" name="kafkaServers" source="logback.kafka.servers"/>-->
+
+<!--    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
+<!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+<!--            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">-->
+<!--                &lt;!&ndash; 时间|环境 |项目名称 |应用名称|错误级别|ip|hostname|[%thread]| %logger{50}| %msg%n &ndash;&gt;-->
+<!--                <pattern>%d{yyyy-MM-dd HH:mm:ss SSS}|${appDev}|${projectName}|${appName}|%-5level|%ipandhostname|[%thread]|%logger{50}|%tid|%msg%n-->
+<!--                </pattern>-->
+<!--            </layout>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+<!--    <appender name="kafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">-->
+<!--        <encoder class="com.github.danielwegener.logback.kafka.encoding.LayoutKafkaMessageEncoder">-->
+<!--            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">-->
+<!--                &lt;!&ndash; 时间|环境 |项目名称 |应用名称|错误级别|ip|hostname|[%thread]| %logger{50}| %msg%n &ndash;&gt;-->
+<!--                <pattern>%d{yyyy-MM-dd HH:mm:ss SSS}|${appDev}|${projectName}|${appName}|%-5level|%ipandhostname|[%thread]|%logger{50}|%tid|%msg%n-->
+<!--                </pattern>-->
+<!--            </layout>-->
+<!--        </encoder>-->
+<!--        <topic>${kafkaTopic}</topic>-->
+<!--        <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.RoundRobinKeyingStrategy"/>-->
+<!--        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy"/>-->
+<!--        <producerConfig>bootstrap.servers=${kafkaServers}</producerConfig>-->
+<!--        <producerConfig>max.block.ms=0</producerConfig>-->
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--    </appender>-->
+
+    <!-- 异步输出 -->
+<!--    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">-->
+<!--        <appender-ref ref="kafkaAppender"/>-->
+<!--    </appender>-->
+
+<!--    <springProfile name="DEV">-->
+<!--        <root level="info">-->
+<!--            <appender-ref ref="STDOUT"/>-->
+<!--            &lt;!&ndash;<appender-ref ref="kafkaAppender"/>&ndash;&gt;-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+<!--    <springProfile name="UAT">-->
+<!--        <logger name="com.yonghui.yh.rme.srm.inventorycenter" level="debug"/>-->
+<!--        <root level="info">-->
+<!--            <appender-ref ref="STDOUT"/>-->
+<!--            <appender-ref ref="kafkaAppender"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+<!--    <springProfile name="PRO">-->
+<!--        <logger name="com.yonghui.yh.rme.srm.inventorycenter" level="debug"/>-->
+<!--        <root level="info">-->
+<!--            <appender-ref ref="kafkaAppender"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+</configuration>
+
